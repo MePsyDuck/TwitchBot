@@ -1,0 +1,3 @@
+twitchio
+pony
+python-dotenv
