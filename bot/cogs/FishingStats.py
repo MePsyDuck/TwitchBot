@@ -18,7 +18,7 @@ class FishingStatsCog(commands.Cog):
             return
 
         if message.author.name.lower() == 'skwishi':
-            if match := re.search('(?P<username>[a-zA-Z0-9_]{4,25}) has snapped their line and got nothing. Try again later', message.content):
+            if match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has snapped their line and got nothing. Try again later', message.content):
                 fisherman = match.group('username').lower()
 
                 fisherman_stats, _ = await FishingStats.get_or_create(username=fisherman)
@@ -27,9 +27,9 @@ class FishingStatsCog(commands.Cog):
 
                 print(f'{fisherman} snapped')
 
-            elif match := re.search('(?P<username>[a-zA-Z0-9_]{4,25}) has caught a fish called the '
-                                    '(?P<fish>[a-zA-Z0-9_]{4,25}) for '
-                                    '(?P<points>[0-9]+) angler points. OOOO', message.content):
+            elif match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has caught a fish called the '
+                                    r'(?P<fish>[a-zA-Z0-9_]{4,25}) for '
+                                    r'(?P<points>[0-9]+) angler points. OOOO', message.content):
                 fisherman = match.group('username').lower()
                 fish = match.group('fish').lower()
                 points = match.group('points')
@@ -46,7 +46,7 @@ class FishingStatsCog(commands.Cog):
 
                 print(f'{fisherman} caught {fish} for {points} points')
 
-        elif re.search('!cast(.*)', message.content):
+        elif re.search(r'!cast(.*)', message.content):
             fisherman = message.author.name.lower()
 
             fisherman_stats, _ = await FishingStats.get_or_create(username=fisherman)
@@ -56,7 +56,8 @@ class FishingStatsCog(commands.Cog):
             print(f'{fisherman} tried casting')
 
     @commands.command()
-    async def stats(self, ctx: commands.Context):
+    @commands.cooldown(rate=1, per=60, bucket=commands.Bucket.default)
+    async def fishingstats(self, ctx: commands.Context):
         if stats := await FishingStats.get_or_none(username=ctx.author.name.lower()):
             await ctx.send(f'{ctx.author.name} : casts={stats.casts}, snaps={stats.snaps}, catches={stats.catches}, '
                            f'biggest_catch={stats.biggest_catch}, times_caught={stats.times_caught}')
