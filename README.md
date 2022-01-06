@@ -1,2 +1,7 @@
 # TODO
--   Add logger
+
+- Add logger
+
+# Notes
+
+Good reference : [Bobotinho](https://github.com/Bobotinho/bot)

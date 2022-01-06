@@ -1,17 +1,16 @@
-from pony.orm import Database, Required, Optional
+from tortoise import fields
 
-db = Database()
-
-
-class FishingStats(db.Entity):
-    user = Required(lambda: User, column="user_id")
-    casts = Required(int, default=0)
-    snaps = Required(int, default=0)
-    catches = Required(int, default=0)
-    times_caught = Required(int, default=0)
-    biggest_catch = Required(int, default=0)
+from tortoise.models import Model
 
 
-class User(db.Entity):
-    username = Required(str, max_len=50, unique=True)
-    fishing_stats = Optional(FishingStats)
+class FishingStats(Model):
+    username = fields.CharField(max_length=64, unique=True)
+    casts = fields.IntField(default=0)
+    snaps = fields.IntField(default=0)
+    catches = fields.IntField(default=0)
+    times_caught = fields.IntField(default=0)
+    biggest_catch = fields.IntField(default=0)
+
+    def __str__(self):
+        return f'{self.username}, casts={self.casts}, snaps={self.snaps}, catches={self.catches}, biggest_catch={self.biggest_catch}, ' \
+               f'times_caught={self.times_caught}'
