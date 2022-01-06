@@ -1,6 +1,6 @@
 # TODO
 
-- Add logger
+- Allow users to check stats of others
 
 # Notes
 

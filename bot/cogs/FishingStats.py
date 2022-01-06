@@ -24,11 +24,10 @@ class FishingStatsCog(commands.Cog):
 
                 logger.debug(f'{fisherman} snapped')
 
-                fisherman_stats, _ = await FishingStats.get_or_create()
+                fisherman_stats, _ = await FishingStats.get_or_create(fisherman=fisherman)
                 fisherman_stats.snaps = F('snaps') + 1
                 await fisherman_stats.save()
-
-            elif match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has caught a fish called the '
+            elif match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has caught a (new species of )?fish called the '
                                     r'(?P<fish>[a-zA-Z0-9_]{4,25}) for '
                                     r'(?P<points>[0-9]+) angler points. OOOO', message.content):
                 fisherman = match.group('username').lower()
@@ -36,7 +35,7 @@ class FishingStatsCog(commands.Cog):
                 points = int(match.group('points'))
 
                 logger.debug(f'{fisherman} caught {fish} for {points} points')
-                await FishingLogs.create(fishername=fisherman, fish=fish, points=points)
+                await FishingLogs.create(fisherman=fisherman, fish=fish, points=points)
 
         elif re.search(r'!cast(.*)', message.content):
             fisherman = message.author.name.lower()

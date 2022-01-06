@@ -1,13 +1,13 @@
 from dotenv import load_dotenv
 
-import db
-from logs.logger import setup_logger
-
-load_dotenv()
-setup_logger()
+load_dotenv()  # should happen first, even before imports
 
 if __name__ == '__main__':
+    import db
     from bot.yepp_bot import YeppBot
+    from logs.logger import setup_logger
+
+    setup_logger()
 
     bot = YeppBot()
 
