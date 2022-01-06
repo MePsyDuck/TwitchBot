@@ -1,3 +1,4 @@
 .python-version
 .env
 bot.*
+__pycache__/
