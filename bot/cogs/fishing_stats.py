@@ -4,14 +4,15 @@ from tortoise.expressions import F
 from twitchio import Message
 from twitchio.ext import commands
 
+from bot.cogs.base import BaseCog
+from bot.config import COOLDOWN
 from db import FishingStats, FishingLogs
 from logs.logger import logger
 
 
-class FishingStatsCog(commands.Cog):
-
+class FishingStatsCog(BaseCog):
     def __init__(self, bot: commands.Bot):
-        self.bot = bot
+        super().__init__(bot)
 
     @commands.Cog.event()
     async def event_message(self, message: Message):
@@ -46,17 +47,18 @@ class FishingStatsCog(commands.Cog):
             fisherman_stats.casts = F('casts') + 1
             await fisherman_stats.save()
 
-    @commands.command()
-    @commands.cooldown(rate=1, per=60, bucket=commands.Bucket.default)
-    async def fishingstats(self, ctx: commands.Context):
-        username = ctx.author.name.lower()
+    @commands.command(aliases=['fs'])
+    @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
+    async def fishingstats(self, ctx: commands.Context, *args: str):
+        username = self.get_user_from_mention(ctx, *args)
+
         if stats := await FishingStats.get_or_none(fisherman=username):
             times_caught = await FishingLogs.filter(fish=username).count()
             catches = await FishingLogs.filter(fisherman=username).count()
             biggest_catch = None
             if catches > 0:
                 biggest_catch = (await FishingLogs.filter(fisherman=username).order_by('-points', '-when').first()).fish
-            await ctx.send(f'{ctx.author.name} : casts={stats.casts}, snaps={stats.snaps}, catches={catches}, '
+            await ctx.send(f'{username} : casts={stats.casts}, snaps={stats.snaps}, catches={catches}, '
                            f'last biggest_catch={biggest_catch}, times_caught={times_caught}')
         else:
-            await ctx.send(f'{ctx.author.name} has no fishing stats recorded.')
+            await ctx.send(f'{username} has no fishing stats recorded.')

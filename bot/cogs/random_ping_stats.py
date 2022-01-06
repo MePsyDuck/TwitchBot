@@ -4,14 +4,15 @@ from tortoise.expressions import F
 from twitchio import Message
 from twitchio.ext import commands
 
+from bot.cogs.base import BaseCog
+from bot.config import COOLDOWN
 from db import RandomPingStats
 from logs.logger import logger
 
 
-class RandomPingStatsCog(commands.Cog):
-
+class RandomPingStatsCog(BaseCog):
     def __init__(self, bot: commands.Bot):
-        self.bot = bot
+        super().__init__(bot)
 
     @commands.Cog.event()
     async def event_message(self, message: Message):
@@ -38,10 +39,12 @@ class RandomPingStatsCog(commands.Cog):
 
             logger.debug(f'{user} randompinged')
 
-    @commands.command(aliases=['pingstats'])
-    @commands.cooldown(rate=1, per=60, bucket=commands.Bucket.default)
-    async def randompingstats(self, ctx: commands.Context):
-        if stats := await RandomPingStats.get_or_none(username=ctx.author.name.lower()):
-            await ctx.send(f'{ctx.author.name} was pinged {stats.times_pinged} times')
+    @commands.command(aliases=['ps'])
+    @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
+    async def randompingstats(self, ctx: commands.Context, *args: str):
+        username = self.get_user_from_mention(ctx, *args)
+
+        if stats := await RandomPingStats.get_or_none(username=username):
+            await ctx.send(f'{username} was pinged {stats.times_pinged} times')
         else:
-            await ctx.send(f'{ctx.author.name} was never pinged')
+            await ctx.send(f'{username} was never pinged')
