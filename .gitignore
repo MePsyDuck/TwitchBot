@@ -1,3 +1,4 @@
 .python-version
 .env
-db/bot.db*
+bot.db*
+log.log

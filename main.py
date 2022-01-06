@@ -1,8 +1,10 @@
 from dotenv import load_dotenv
 
 import db
+from logs.logger import setup_logger
 
 load_dotenv()
+setup_logger()
 
 if __name__ == '__main__':
     from bot.yepp_bot import YeppBot

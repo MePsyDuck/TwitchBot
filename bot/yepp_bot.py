@@ -2,6 +2,7 @@ from twitchio.ext import commands
 
 from bot.cogs import FishingStatsCog, RandomPingStatsCog
 from bot.config import ACCESS_TOKEN, CHANNELS, PREFIX
+from logs.logger import logger
 
 
 class YeppBot(commands.Bot):
@@ -12,4 +13,4 @@ class YeppBot(commands.Bot):
         self.add_cog(RandomPingStatsCog(self))
 
     async def event_ready(self):
-        print(f'Logged in as | {self.nick}')
+        logger.info(f'Logged in as | {self.nick}')

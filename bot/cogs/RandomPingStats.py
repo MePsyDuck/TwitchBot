@@ -5,6 +5,7 @@ from twitchio import Message
 from twitchio.ext import commands
 
 from db import RandomPingStats
+from logs.logger import logger
 
 
 class RandomPingStatsCog(commands.Cog):
@@ -26,7 +27,7 @@ class RandomPingStatsCog(commands.Cog):
                     ping_stats.times_pinged = F('times_pinged') + 1
                     await ping_stats.save()
 
-                print(f'pinged: {pinged_users}')
+                logger.debug(f'pinged: {pinged_users}')
 
         elif re.search('!randomping(.*)', message.content):
             user = message.author.name.lower()
@@ -35,7 +36,7 @@ class RandomPingStatsCog(commands.Cog):
             ping_stats.random_pings = F('random_pings') + 1
             await ping_stats.save()
 
-            print(f'{user} randompinged')
+            logger.debug(f'{user} randompinged')
 
     @commands.command(aliases=['pingstats'])
     @commands.cooldown(rate=1, per=60, bucket=commands.Bucket.default)

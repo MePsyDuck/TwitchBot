@@ -4,16 +4,22 @@ from tortoise.models import Model
 
 
 class FishingStats(Model):
-    username = fields.CharField(max_length=64, unique=True)
+    fisherman = fields.CharField(max_length=64, unique=True)
     casts = fields.IntField(default=0)
     snaps = fields.IntField(default=0)
-    catches = fields.IntField(default=0)
-    times_caught = fields.IntField(default=0)
-    biggest_catch = fields.IntField(default=0)
 
     def __str__(self):
-        return f'{self.username}, casts={self.casts}, snaps={self.snaps}, catches={self.catches}, biggest_catch={self.biggest_catch}, ' \
-               f'times_caught={self.times_caught}'
+        return f'{self.fisherman}, casts={self.casts}, snaps={self.snaps}'
+
+
+class FishingLogs(Model):
+    fisherman = fields.CharField(max_length=64, index=True)
+    fish = fields.CharField(max_length=64, index=True)
+    points = fields.IntField(default=1)
+    when = fields.DatetimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.fisherman}, caught {self.fish} for {self.points} points at {self.when}'
 
 
 class RandomPingStats(Model):
