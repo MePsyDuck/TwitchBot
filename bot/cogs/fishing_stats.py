@@ -19,8 +19,6 @@ class FishingStatsCog(BaseCog):
         if message.echo:
             return
 
-        logger.debug(f'{message.author.name}: {message.content}')
-
         if message.author.name.lower() == 'skwishi':
             if match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has snapped their line and got nothing. Try again later', message.content):
                 fisherman = match.group('username').lower()
