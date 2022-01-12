@@ -1,4 +1,5 @@
 .python-version
 .env
 bot.*
+*.log
 __pycache__/
