@@ -58,13 +58,13 @@ class FishingStatsCog(BaseCog):
             biggest_catch = None
             if catches > 0:
                 biggest_catch = (await FishingLogs.filter(fisherman=username).order_by('-points', '-when').first()).fish
-            await ctx.send(f'{username} : casts={stats.casts}, snaps={stats.snaps}, catches={catches}, '
-                           f'last biggest_catch={biggest_catch}, times_caught={times_caught}')
+            await ctx.send(f'{username} {stats.casts} casts, {stats.snaps} snaps, {catches} catches, '
+                           f'biggest fish {biggest_catch}, caught {times_caught} times.')
         else:
             await ctx.send(f'{username} has no fishing stats recorded.')
 
     @commands.command(aliases=['snappers'])
     @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
     async def topsnappers(self, ctx: commands.Context):
-        top_snappers = await FishingStats.all().order_by('-snaps', '-casts').limit(5)
+        top_snappers = await FishingStats.all().order_by('-snaps', '-casts').limit(7)
         await ctx.send(f'x0r6ztGiggle {", ".join([f"{snapper.fisherman} {snapper.snaps}" for snapper in top_snappers])}')

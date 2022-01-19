@@ -6,4 +6,4 @@ ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 CHANNELS = ['singsing', 'mepsyduck_']
 PREFIX = '!!'
 
-COOLDOWN = 60 if not DEBUG else 0
+COOLDOWN =5 if not DEBUG else 0
