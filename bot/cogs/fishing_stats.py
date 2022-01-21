@@ -19,7 +19,7 @@ class FishingStatsCog(BaseCog):
         if message.echo:
             return
 
-        if message.author.name.lower() == 'skwishi':
+        if message.author.name.lower() == 'skwishi' or message.author.name.lower() == self.bot.nick:
             if match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has snapped their line and got nothing. Try again later', message.content):
                 fisherman = match.group('username').lower()
 
@@ -29,8 +29,8 @@ class FishingStatsCog(BaseCog):
                 fisherman_stats.snaps = F('snaps') + 1
                 await fisherman_stats.save()
             elif match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has caught a (new species of )?fish called the '
-                                    r'(?P<fish>[a-zA-Z0-9_]{4,25}) for '
-                                    r'(?P<points>[0-9]+) angler points. OOOO', message.content):
+                                    r'(?P<fish>[a-zA-Z0-9_]{4,25}) (for|worth) '
+                                    r'(?P<points>[0-9]+) (angler )?points. OOOO', message.content):
                 fisherman = match.group('username').lower()
                 fish = match.group('fish').lower()
                 points = int(match.group('points'))
