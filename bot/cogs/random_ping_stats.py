@@ -7,7 +7,7 @@ from twitchio.ext import commands
 from bot.cogs.base import BaseCog
 from bot.config import COOLDOWN
 from db import RandomPingStats
-from logs.logger import logger
+from logs import logger
 
 
 class RandomPingStatsCog(BaseCog):

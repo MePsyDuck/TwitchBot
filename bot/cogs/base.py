@@ -1,11 +1,21 @@
+import asyncio
 import re
 
 from twitchio.ext import commands
+
+from bot.config import SELF_REPLY_DELAY
 
 
 class BaseCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+
+    async def cog_check(self, ctx):
+        print(ctx.author.badges)
+        if ctx.author.name == ctx.bot.nick:
+            if not any(badge in ctx.author.badges for badge in ['vip', 'moderator', 'broadcaster']):
+                await asyncio.sleep(SELF_REPLY_DELAY)
+        return True
 
     @staticmethod
     def get_user_from_mention(ctx: commands.Context, *args: str):

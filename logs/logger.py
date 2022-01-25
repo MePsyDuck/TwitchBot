@@ -2,8 +2,6 @@ import logging
 
 from logs.config import BOT_LOGGER, LOG_FORMAT, LOG_LEVEL, BOT_LOG_FILENAME, DEBUG, ROOT_LOG_FILENAME
 
-logger = logging.getLogger(BOT_LOGGER)
-
 
 def setup_logger():
     log_formatter = logging.Formatter(LOG_FORMAT)
@@ -32,5 +30,6 @@ def setup_logger():
         stream_handler.setFormatter(log_formatter)
         stream_handler.setLevel(logging.DEBUG)
 
-        bot_logger.addHandler(stream_handler)
         default_logger.addHandler(stream_handler)
+
+    return bot_logger

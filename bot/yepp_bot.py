@@ -2,11 +2,10 @@ from twitchio.ext import commands
 
 from bot.cogs import FishingStatsCog, RandomPingStatsCog
 from bot.config import ACCESS_TOKEN, CHANNELS, PREFIX
-from logs.logger import logger
+from logs import logger
 
 
 class YeppBot(commands.Bot):
-
     def __init__(self):
         super().__init__(token=ACCESS_TOKEN, prefix=PREFIX, initial_channels=CHANNELS)
         self.add_cog(FishingStatsCog(self))

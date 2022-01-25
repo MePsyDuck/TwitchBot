@@ -7,7 +7,7 @@ from twitchio.ext import commands
 from bot.cogs.base import BaseCog
 from bot.config import COOLDOWN
 from db import FishingStats, FishingLogs
-from logs.logger import logger
+from logs import logger
 
 
 class FishingStatsCog(BaseCog):
@@ -57,10 +57,10 @@ class FishingStatsCog(BaseCog):
             catches = await FishingLogs.filter(fisherman=username).count()
             biggest_catch = None
             if catches > 0:
-                biggest_catch = (await FishingLogs.filter(fisherman=username).order_by('-points', '-when').first()).fish
+                biggest_catch = await FishingLogs.filter(fisherman=username).order_by('-points', '-when').first()
             await ctx.send(
                 f'{username} {stats.snaps + catches} casts, {stats.snaps} snaps ({stats.snaps * 100 // (stats.snaps + catches)}%), {catches} catches, '
-                f'biggest fish {biggest_catch}, caught {times_caught} times.')
+                f'biggest fish {biggest_catch.fish}({biggest_catch.points}), caught {times_caught} times.')
         else:
             await ctx.send(f'{username} has no fishing stats recorded.')
 
