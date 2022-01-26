@@ -42,9 +42,13 @@ class RandomPingStatsCog(BaseCog):
     @commands.command(aliases=['ps'])
     @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
     async def randompingstats(self, ctx: commands.Context, *args: str):
-        username = self.get_user_from_mention(ctx, *args)
+        username = self.get_mentioned_user(*args) or ctx.author.name
+        username_lower = username.lower()
 
-        if stats := await RandomPingStats.get_or_none(username=username):
-            await ctx.send(f'{username} was pinged {stats.times_pinged} times')
+        if stats := await RandomPingStats.get_or_none(username=username_lower):
+            if stats.times_pinged == 0:
+                await ctx.send(f'{username} was never pinged')
+            else:
+                await ctx.send(f'{username} was pinged {stats.times_pinged} times')
         else:
             await ctx.send(f'{username} was never pinged')

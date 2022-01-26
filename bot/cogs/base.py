@@ -22,15 +22,8 @@ class BaseCog(commands.Cog):
         return True
 
     @staticmethod
-    def get_user_from_mention(ctx: commands.Context, *args: str) -> str:
-        username = ctx.author.name.lower()
-
+    def get_mentioned_user(*args: str):
         if args:
-            tmp_uname = args[0].lower().strip()
-            if args[0].startswith('@'):
-                tmp_uname = tmp_uname[1:]
-
-            if re.match(r'^[a-zA-Z0-9_]{4,25}$', tmp_uname):
-                username = tmp_uname
-
-        return username
+            if match := re.search(r'\s*@?(?P<username>[a-zA-Z0-9_]{4,25}),?\s*', args[0]):
+                return match.group('username')
+        return None

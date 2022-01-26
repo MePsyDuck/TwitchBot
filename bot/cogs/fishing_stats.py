@@ -50,18 +50,25 @@ class FishingStatsCog(BaseCog):
     @commands.command(aliases=['fs'])
     @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
     async def fishingstats(self, ctx: commands.Context, *args: str):
-        username = self.get_user_from_mention(ctx, *args)
+        username = self.get_mentioned_user(*args) or ctx.author.name
+        username_lower = username.lower()
 
-        if stats := await FishingStats.get_or_none(fisherman=username):
-            times_caught = await FishingLogs.filter(fish=username).count()
-            catches = await FishingLogs.filter(fisherman=username).count()
-            biggest_catch = ''
+        if stats := await FishingStats.get_or_none(fisherman=username_lower):
+            times_caught = await FishingLogs.filter(fish=username_lower).count()
+            catches = await FishingLogs.filter(fisherman=username_lower).count()
+
+            biggest_catch = None
             if catches > 0:
-                biggest_catch = await FishingLogs.filter(fisherman=username).order_by('-points', '-when').first()
-                biggest_catch = f'biggest fish {biggest_catch.fish}({biggest_catch.points}), '
+                biggest_catch = await FishingLogs.filter(fisherman=username_lower).order_by('-points', '-when').first()
+
+            casts = stats.snaps + catches
             await ctx.send(
-                f'{username} {stats.snaps + catches} casts, {stats.snaps} snaps ({stats.snaps * 100 // (stats.snaps + catches)}%), {catches} catches, '
-                f'{biggest_catch}caught {times_caught} times.')
+                f'{username} {casts} casts, '
+                f'{stats.snaps} snaps ({stats.snaps * 100 // casts}%), '
+                f'{catches} caught, '
+                f'{f"biggest fish {biggest_catch.fish}({biggest_catch.points}), " if biggest_catch else ""}'
+                f'{f"caught {times_caught} times" if times_caught else "never caught"}'
+            )
         else:
             await ctx.send(f'{username} has no fishing stats recorded.')
 
