@@ -21,7 +21,7 @@ class BaseCog(commands.Cog):
     def get_user_from_mention(ctx: commands.Context, *args: str):
         username = ctx.author.name.lower()
 
-        if args and len(args) == 1:
+        if args:
             tmp_uname = args[0].lower().strip()
             if args[0].startswith('@'):
                 tmp_uname = tmp_uname[1:]
