@@ -1,2 +1,2 @@
-from bot.cogs.fishing_stats import FishingStatsCog
-from bot.cogs.random_ping_stats import RandomPingStatsCog
+from .fishing_stats import FishingStatsCog
+from .random_ping_stats import RandomPingStatsCog

@@ -13,8 +13,8 @@ if __name__ == '__main__':
         bot.loop.run_until_complete(db.init())
         bot.loop.run_until_complete(bot.connect())
         bot.loop.run_forever()
-    except Exception as e:
-        logger.critical(e, exc_info=1)
+    except Exception as exc:
+        logger.critical(exc, exc_info=1)
         bot.loop.run_until_complete(db.close())
     else:
         bot.loop.run_until_complete(db.close())

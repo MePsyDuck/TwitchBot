@@ -23,7 +23,7 @@ class FishingStatsCog(BaseCog):
             if match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has snapped their line and got nothing. Try again later', message.content):
                 fisherman = match.group('username').lower()
 
-                logger.debug(f'{fisherman} snapped')
+                logger.info(f'{fisherman} snapped')
 
                 fisherman_stats, _ = await FishingStats.get_or_create(fisherman=fisherman)
                 fisherman_stats.snaps = F('snaps') + 1
@@ -35,13 +35,13 @@ class FishingStatsCog(BaseCog):
                 fish = match.group('fish').lower()
                 points = int(match.group('points'))
 
-                logger.debug(f'{fisherman} caught {fish} for {points} points')
+                logger.info(f'{fisherman} caught {fish} for {points} points')
                 await FishingLogs.create(fisherman=fisherman, fish=fish, points=points)
 
         elif re.search(r'!cast(.*)', message.content):
             fisherman = message.author.name.lower()
 
-            logger.debug(f'{fisherman} tried casting')
+            logger.info(f'{fisherman} tried casting')
 
             fisherman_stats, _ = await FishingStats.get_or_create(fisherman=fisherman)
             fisherman_stats.casts = F('casts') + 1

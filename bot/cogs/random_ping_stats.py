@@ -28,7 +28,7 @@ class RandomPingStatsCog(BaseCog):
                     ping_stats.times_pinged = F('times_pinged') + 1
                     await ping_stats.save()
 
-                logger.debug(f'pinged: {pinged_users}')
+                logger.info(f'pinged: {pinged_users}')
 
         elif re.search('!randomping(.*)', message.content):
             user = message.author.name.lower()
@@ -37,7 +37,7 @@ class RandomPingStatsCog(BaseCog):
             ping_stats.random_pings = F('random_pings') + 1
             await ping_stats.save()
 
-            logger.debug(f'{user} randompinged')
+            logger.info(f'{user} randompinged')
 
     @commands.command(aliases=['ps'])
     @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)

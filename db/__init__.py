@@ -1,7 +1,7 @@
 from tortoise import Tortoise
 
-from db.config import DB_URL
-from db.models import *
+from .config import DB_URL
+from .models import *
 
 
 async def init():
