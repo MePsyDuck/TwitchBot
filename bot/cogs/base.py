@@ -15,7 +15,6 @@ class BaseCog(commands.Cog):
         logger.error(exc, exc_info=True)
 
     async def cog_check(self, ctx: commands.Context):
-        print(ctx.author.badges)
         if ctx.author.name == ctx.bot.nick:
             if not any(badge in ctx.author.badges for badge in ['vip', 'moderator', 'broadcaster']):
                 await asyncio.sleep(SELF_REPLY_DELAY)

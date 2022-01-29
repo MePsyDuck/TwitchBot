@@ -13,3 +13,6 @@ class YeppBot(commands.Bot):
 
     async def event_ready(self):
         logger.info(f'Logged in as | {self.nick}')
+
+    async def event_command_error(self, ctx, exc):
+        logger.error(exc, exc_info=True)
