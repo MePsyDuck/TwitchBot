@@ -62,13 +62,16 @@ class FishingStatsCog(BaseCog):
                 biggest_catch = await FishingLogs.filter(fisherman=username_lower).order_by('-points', '-when').first()
 
             casts = stats.snaps + catches
-            await ctx.send(
-                f'{username} {casts} casts, '
-                f'{stats.snaps} snaps ({stats.snaps * 100 // casts}%), '
-                f'{catches} caught, '
-                f'{f"biggest fish {biggest_catch.fish}({biggest_catch.points}), " if biggest_catch else ""}'
-                f'{f"caught {times_caught} times" if times_caught else "never caught"}'
-            )
+            if casts > 0:
+                await ctx.send(
+                    f'{username} {casts} casts, '
+                    f'{stats.snaps} snaps ({stats.snaps * 100 // casts}%), '
+                    f'{catches} caught, '
+                    f'{f"biggest fish {biggest_catch.fish}({biggest_catch.points}), " if biggest_catch else ""}'
+                    f'{f"caught {times_caught} times" if times_caught else "never caught"}'
+                )
+            else:
+                await ctx.send(f'{username} has no fishing stats recorded.')
         else:
             await ctx.send(f'{username} has no fishing stats recorded.')
 
