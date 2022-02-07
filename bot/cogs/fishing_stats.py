@@ -78,5 +78,5 @@ class FishingStatsCog(BaseCog):
     @commands.command(aliases=['snappers'])
     @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
     async def topsnappers(self, ctx: commands.Context):
-        top_snappers = await FishingStats.all().order_by('-snaps', '-casts').limit(7)
+        top_snappers = await FishingStats.all().order_by('-snaps', '-casts').limit(5)
         await ctx.send(f'x0r6ztGiggle {", ".join([f"{snapper.fisherman} {snapper.snaps}" for snapper in top_snappers])}')
