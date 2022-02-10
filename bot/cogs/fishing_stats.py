@@ -5,7 +5,7 @@ from twitchio import Message
 from twitchio.ext import commands
 
 from bot.cogs.base import BaseCog
-from bot.config import COOLDOWN
+from bot.config import COOLDOWN, DEV_NICK
 from db import FishingStats, FishingLogs
 from logs import logger
 
@@ -19,7 +19,7 @@ class FishingStatsCog(BaseCog):
         if message.echo:
             return
 
-        if message.author.name.lower() == 'skwishi' or message.author.name.lower() == self.bot.nick:
+        if message.author.name.lower() == 'skwishi' or message.author.name.lower() == DEV_NICK:
             if match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has snapped their line and got nothing. Try again later', message.content):
                 fisherman = match.group('username').lower()
 

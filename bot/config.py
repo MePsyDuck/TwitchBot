@@ -7,4 +7,4 @@ CHANNELS = ['singsing', 'mepsyduck_']
 PREFIX = '!!'
 
 COOLDOWN = 5 if not DEBUG else 0
-SELF_REPLY_DELAY = 2
+DEV_NICK = 'mepsyduck_'
