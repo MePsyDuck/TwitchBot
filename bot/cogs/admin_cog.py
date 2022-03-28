@@ -6,7 +6,7 @@ from db import FishingStats, FishingLogs, RandomPingStats
 from logs import logger
 
 
-class FAdminsCog(BaseCog):
+class AdminCog(BaseCog):
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
 
