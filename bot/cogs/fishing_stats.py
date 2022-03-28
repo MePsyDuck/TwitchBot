@@ -53,6 +53,10 @@ class FishingStatsCog(BaseCog):
         username = self.get_mentioned_user(*args) or ctx.author.name
         username_lower = username.lower()
 
+        if username_lower == 'lei069':
+            await ctx.send('WHOMEGALUL ')
+            return
+
         if stats := await FishingStats.get_or_none(fisherman=username_lower):
             times_caught = await FishingLogs.filter(fish=username_lower).count()
             catches = await FishingLogs.filter(fisherman=username_lower).count()
