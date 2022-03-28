@@ -1,3 +1,4 @@
+from tortoise.expressions import F
 from twitchio.ext import commands
 
 from bot.cogs.base import BaseCog
@@ -15,10 +16,23 @@ class AdminCog(BaseCog):
         from_username, to_username = args
 
         if ctx.message.author.name.lower() == DEV_NICK:
-            await FishingStats.filter(fisherman=from_username).update(fisherman=to_username)
+            from_angler = await FishingStats.get(fisherman=from_username)
+            to_angler, _ = await FishingStats.get_or_create(fisherman=to_username)
+            to_angler.casts = F('casts') + from_angler.casts
+            to_angler.snaps = F('snaps') + from_angler.snaps
+            await to_angler.save()
+            await from_angler.delete()
+
             await FishingLogs.filter(fisherman=from_username).update(fisherman=to_username)
             await FishingLogs.filter(fish=from_username).update(fish=to_username)
-            await RandomPingStats.filter(username=from_username).update(username=to_username)
+
+            from_user = await RandomPingStats.get(username=from_username)
+            to_user, _ = await RandomPingStats.get_or_create(username=from_username)
+            to_user.random_pings = F('random_pings') + from_user.random_pings
+            to_user.times_pinged = F('times_pinged') + from_user.times_pinged
+            await to_user.save()
+            await from_user.delete()
+
             await ctx.send(f'{from_username} updated to {to_username}')
             logger.info(f'{from_username} updated to {to_username}')
         else:
