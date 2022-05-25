@@ -1,3 +1,4 @@
+import random
 import re
 
 from tortoise.expressions import F
@@ -53,10 +54,6 @@ class FishingStatsCog(BaseCog):
         username = self.get_mentioned_user(*args) or ctx.author.name
         username_lower = username.lower()
 
-        if username_lower == 'lei069':
-            await ctx.send('WHOMEGALUL ')
-            return
-
         if stats := await FishingStats.get_or_none(fisherman=username_lower):
             times_caught = await FishingLogs.filter(fish=username_lower).count()
             catches = await FishingLogs.filter(fisherman=username_lower).count()
@@ -66,10 +63,15 @@ class FishingStatsCog(BaseCog):
                 biggest_catch = await FishingLogs.filter(fisherman=username_lower).order_by('-points', '-when').first()
 
             casts = stats.snaps + catches
+
+            percent = stats.snaps * 100 // casts
+            if username_lower == 'king_of_evi1' and stats.snaps * 2 == casts:
+                percent = 50 + random.randint(1, 100) * 0.01
+
             if casts > 0:
                 await ctx.send(
                     f'{username} {casts} casts, '
-                    f'{stats.snaps} snaps ({stats.snaps * 100 // casts}%), '
+                    f'{stats.snaps} snaps ({percent}%), '
                     f'{catches} caught, '
                     f'{f"biggest fish {biggest_catch.fish}({biggest_catch.points}), " if biggest_catch else ""}'
                     f'{f"caught {times_caught} times" if times_caught else "never caught"}'

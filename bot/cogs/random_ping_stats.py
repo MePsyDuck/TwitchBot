@@ -45,10 +45,16 @@ class RandomPingStatsCog(BaseCog):
         username = self.get_mentioned_user(*args) or ctx.author.name
         username_lower = username.lower()
 
+        msgs = []
         if stats := await RandomPingStats.get_or_none(username=username_lower):
             if stats.times_pinged == 0:
-                await ctx.send(f'{username} was never pinged')
+                msgs += f' was never pinged'
             else:
-                await ctx.send(f'{username} was pinged {stats.times_pinged} times')
+                msgs += f' was pinged {stats.times_pinged} times'
+            if stats.random_pings == 0:
+                msgs += f' never pinged others'
+            else:
+                msgs += f' pinged others {stats.random_pings} times'
+            await ctx.send(username + ','.join(msgs) + '.')
         else:
             await ctx.send(f'{username} was never pinged')
