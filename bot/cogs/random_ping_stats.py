@@ -20,7 +20,7 @@ class RandomPingStatsCog(BaseCog):
             return
 
         if message.author.name.lower() == 'skwishi':
-            if match := re.search(r'DinkDonk (?P<users>([a-zA-Z0-9_]{4,25}\s?)+)', message.content):
+            if match := re.search(r'singsingRingring (?P<users>([a-zA-Z0-9_]{4,25}\s?)+)', message.content):
                 pinged_users = match.group('users').lower()
 
                 for user in re.findall(r'([a-zA-Z0-9_]{4,25})\s?', pinged_users):
