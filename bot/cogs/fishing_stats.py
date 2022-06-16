@@ -65,8 +65,8 @@ class FishingStatsCog(BaseCog):
             casts = stats.snaps + catches
 
             percent = stats.snaps * 100 // casts
-            if username_lower == 'king_of_evi1' and stats.snaps * 2 == casts:
-                percent = 50 + random.randint(1, 100) * 0.01
+            if username_lower == 'king_of_evi1':
+                percent = 50.00
 
             if casts > 0:
                 await ctx.send(
