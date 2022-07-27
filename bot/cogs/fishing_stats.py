@@ -1,6 +1,7 @@
-import random
 import re
 
+from cacheout import LRUCache
+from regex import regex
 from tortoise.expressions import F
 from twitchio import Message
 from twitchio.ext import commands
@@ -14,6 +15,7 @@ from logs import logger
 class FishingStatsCog(BaseCog):
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
+        self.cache = LRUCache()
 
     @commands.Cog.event()
     async def event_message(self, message: Message):
@@ -21,18 +23,36 @@ class FishingStatsCog(BaseCog):
             return
 
         if message.author.name.lower() == 'skwishi' or message.author.name.lower() == DEV_NICK:
-            if match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has snapped their line and got nothing. Try again later', message.content):
-                fisherman = match.group('username').lower()
+            if match := regex.search(r'(?P<display_name>[\p{L}|\p{N}]+) has snapped their line and got nothing. Try '
+                                     r'again laterr', message.content):
+                display_name = match.group('display_name').lower()
+                if not re.match(r'[a-z0-9_]{4,25}', display_name):
+                    if self.cache.get(display_name):
+                        fisherman = self.cache.get(display_name)
+                    else:
+                        logger.critical(f'{display_name} not in cache, {message.author.name.lower()}: {message.content}')
+                        return
+                else:
+                    fisherman = display_name
 
                 logger.info(f'{fisherman} snapped')
 
                 fisherman_stats, _ = await FishingStats.get_or_create(fisherman=fisherman)
                 fisherman_stats.snaps = F('snaps') + 1
                 await fisherman_stats.save()
-            elif match := re.search(r'(?P<username>[a-zA-Z0-9_]{4,25}) has caught a (new species of )?fish called the '
-                                    r'(?P<fish>[a-zA-Z0-9_]{4,25}) (for|worth) '
-                                    r'(?P<points>[0-9]+) (angler )?points. OOOO', message.content):
-                fisherman = match.group('username').lower()
+            elif match := regex.search(r'(?P<display_name>[\p{L}|\p{N}]+) has caught a (new species of )?fish '
+                                       r'called the (?P<fish>[a-zA-Z0-9_]{4,25}) (for|worth) '
+                                       r'(?P<points>[0-9]+) (angler )?points. OOOO', message.content):
+                display_name = match.group('display_name').lower()
+                if not re.match(r'[a-z0-9_]{4,25}', display_name):
+                    if self.cache.get(display_name):
+                        fisherman = self.cache.get(display_name)
+                    else:
+                        logger.critical(f'{display_name} not in cache, {message.author.name.lower()}: {message.content}')
+                        return
+                else:
+                    fisherman = display_name
+
                 fish = match.group('fish').lower()
                 points = int(match.group('points'))
 
@@ -41,6 +61,9 @@ class FishingStatsCog(BaseCog):
 
         elif re.search(r'!cast(.*)', message.content):
             fisherman = message.author.name.lower()
+
+            if message.author.display_name.lower() != fisherman:
+                self.cache.set(message.author.display_name.lower(), fisherman)
 
             logger.info(f'{fisherman} tried casting')
 
