@@ -7,15 +7,6 @@ def setup_logger():
     log_formatter = logging.Formatter(LOG_FORMAT)
     log_level = logging.getLevelName(LOG_LEVEL)
 
-    # Root logging
-    file_handler = logging.FileHandler(ROOT_LOG_FILENAME, mode='a', encoding='utf-8')
-    file_handler.setFormatter(log_formatter)
-    file_handler.setLevel(logging.DEBUG)
-
-    default_logger = logging.getLogger()
-    default_logger.setLevel(log_level)
-    default_logger.addHandler(file_handler)
-
     # Bot logging
     file_handler = logging.FileHandler(BOT_LOG_FILENAME, mode='a', encoding='utf-8')
     file_handler.setFormatter(log_formatter)
@@ -26,6 +17,16 @@ def setup_logger():
     bot_logger.addHandler(file_handler)
 
     if DEBUG:
+        # Root logging
+        file_handler = logging.FileHandler(ROOT_LOG_FILENAME, mode='a', encoding='utf-8')
+        file_handler.setFormatter(log_formatter)
+        file_handler.setLevel(logging.DEBUG)
+
+        default_logger = logging.getLogger()
+        default_logger.setLevel(log_level)
+        default_logger.addHandler(file_handler)
+        
+        # Console logging
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(log_formatter)
         stream_handler.setLevel(logging.DEBUG)
