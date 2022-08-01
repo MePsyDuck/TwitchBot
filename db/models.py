@@ -29,3 +29,15 @@ class RandomPingStats(Model):
 
     def __str__(self):
         return f'{self.username}, random_pings={self.random_pings}, times_pinged={self.times_pinged}'
+
+
+class ChannelStats(Model):
+    channel = fields.CharField(max_length=64)
+    key = fields.CharField(max_length=64)
+    value = fields.CharField(max_length=256, default='')
+
+    def __str__(self):
+        return f'{self.channel}: [{self.key} = {self.value}]'
+
+    class Meta:
+        unique_together = ("channel", "key")

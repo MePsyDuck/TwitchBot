@@ -3,3 +3,4 @@ twitchio
 tortoise-orm
 cacheout
 regex
+humanize
