@@ -23,8 +23,8 @@ class FishingStatsCog(BaseCog):
             return
 
         if message.author.name.lower() == 'skwishi' or message.author.name.lower() == DEV_NICK:
-            if match := regex.search(r'(?P<display_name>[\p{L}|\p{N}]+) has snapped their line and got nothing. Try '
-                                     r'again laterr', message.content):
+            if match := regex.search(r'(?P<display_name>[\p{L}|\p{N}_]+) has snapped their line and got nothing. Try '
+                                     r'again later', message.content):
                 display_name = match.group('display_name').lower()
                 if not re.match(r'[a-z0-9_]{4,25}', display_name):
                     if self.cache.get(display_name):
@@ -40,7 +40,7 @@ class FishingStatsCog(BaseCog):
                 fisherman_stats, _ = await FishingStats.get_or_create(fisherman=fisherman)
                 fisherman_stats.snaps = F('snaps') + 1
                 await fisherman_stats.save()
-            elif match := regex.search(r'(?P<display_name>[\p{L}|\p{N}]+) has caught a (new species of )?fish '
+            elif match := regex.search(r'(?P<display_name>[\p{L}|\p{N}_]+) has caught a (new species of )?fish '
                                        r'called the (?P<fish>[a-zA-Z0-9_]{4,25}) (for|worth) '
                                        r'(?P<points>[0-9]+) (angler )?points. OOOO', message.content):
                 display_name = match.group('display_name').lower()
