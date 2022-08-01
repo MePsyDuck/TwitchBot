@@ -1,1 +1,1 @@
-from .yepp_bot import YeppBot
+from .yepp_bot import yepp_bot

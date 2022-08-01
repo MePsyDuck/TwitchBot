@@ -5,6 +5,7 @@ from twitchio import HTTPException
 from twitchio.ext import commands
 from twitchio.ext.eventsub import NotificationEvent
 
+from bot.yepp_bot import yepp_bot
 from bot.cogs.base import BaseCog, bot_client, eventsub_client
 from bot.config import COOLDOWN, CHANNELS, DATETIME_FORMAT
 from db import ChannelStats
@@ -20,6 +21,8 @@ async def event_eventsub_notification_stream_start(notification_event: Notificat
     last_live, _ = await ChannelStats.get_or_create(channel=live_event.broadcaster.name, key=KEY_LAST_LIVE)
     last_live.value = live_event.started_at.strftime(DATETIME_FORMAT)
     await last_live.save()
+    channel = yepp_bot.get_channel(live_event.broadcaster.name)
+    await channel.send("laivuu pogg")
 
 
 @bot_client.event()
