@@ -3,6 +3,7 @@ import re
 from cacheout import LRUCache
 from regex import regex
 from tortoise.expressions import F
+from tortoise.functions import Count
 from twitchio import Message
 from twitchio.ext import commands
 
@@ -109,3 +110,10 @@ class FishingStatsCog(BaseCog):
     async def topsnappers(self, ctx: commands.Context):
         top_snappers = await FishingStats.all().order_by('-snaps', '-casts').limit(5)
         await ctx.send(f'x0r6ztGiggle {", ".join([f"{snapper.fisherman} {snapper.snaps}" for snapper in top_snappers])}')
+
+    @commands.command(aliases=['catches'])
+    @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
+    async def topcatches(self, ctx: commands.Context):
+        top_catchers = await FishingLogs.annotate(count=Count('id')).group_by('fisherman').order_by('-count')\
+            .limit(5).values('fisherman', 'count')
+        await ctx.send('🎣 ' + ', '.join([f"{catcher['fisherman']} {catcher['count']}" for catcher in top_catchers]))
