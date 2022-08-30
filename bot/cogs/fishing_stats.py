@@ -117,3 +117,10 @@ class FishingStatsCog(BaseCog):
         top_catchers = await FishingLogs.annotate(count=Count('id')).group_by('fisherman').order_by('-count')\
             .limit(5).values('fisherman', 'count')
         await ctx.send('🎣 ' + ', '.join([f"{catcher['fisherman']} {catcher['count']}" for catcher in top_catchers]))
+
+    @commands.command(aliases=['caught'])
+    @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
+    async def topcaught(self, ctx: commands.Context):
+        top_caught = await FishingLogs.annotate(count=Count('id')).group_by('fish').order_by('-count')\
+            .limit(5).values('fish', 'count')
+        await ctx.send('FailFish ' + ', '.join([f"{fish['fish']} {fish['count']}" for fish in top_caught]))
