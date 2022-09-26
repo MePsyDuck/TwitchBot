@@ -83,8 +83,10 @@ class FishingStatsCog(BaseCog):
             catches = await FishingLogs.filter(fisherman=username_lower).count()
 
             biggest_catch = None
+            biggest_fish = None
             if catches > 0:
                 biggest_catch = await FishingLogs.filter(fisherman=username_lower).order_by('-points', '-when').first()
+                biggest_fish = biggest_catch.fish if biggest_catch.fish != 'auloen' else 'gachiGOLD'
 
             casts = stats.snaps + catches
 
@@ -97,7 +99,7 @@ class FishingStatsCog(BaseCog):
                     f'{username} {casts} casts, '
                     f'{stats.snaps} snaps ({percent}%), '
                     f'{catches} caught, '
-                    f'{f"biggest fish {biggest_catch.fish}({biggest_catch.points}), " if biggest_catch else ""}'
+                    f'{f"biggest fish {biggest_fish}({biggest_catch.points}), " if biggest_catch else ""}'
                     f'{f"caught {times_caught} times" if times_caught else "never caught"}'
                 )
             else:
