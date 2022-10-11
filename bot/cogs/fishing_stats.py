@@ -1,4 +1,5 @@
 import re
+from datetime import datetime, timedelta
 
 from cacheout import LRUCache
 from regex import regex
@@ -17,6 +18,7 @@ class FishingStatsCog(BaseCog):
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
         self.cache = LRUCache()
+        self.last_cyn_reply_at = datetime.utcnow()
 
     @commands.Cog.event()
     async def event_message(self, message: Message):
@@ -41,6 +43,11 @@ class FishingStatsCog(BaseCog):
                 fisherman_stats, _ = await FishingStats.get_or_create(fisherman=fisherman)
                 fisherman_stats.snaps = F('snaps') + 1
                 await fisherman_stats.save()
+
+                if datetime.utcnow() - self.last_cyn_reply_at > timedelta(hours=1):
+                    self.last_cyn_reply_at = datetime.utcnow()
+                    await message.channel.send("CouldYouNot")
+
             elif match := regex.search(r'(?P<display_name>[\p{L}|\p{N}_]+) has caught a (new species of )?fish '
                                        r'called the (?P<fish>[a-zA-Z0-9_]{4,25}) (for|worth) '
                                        r'(?P<points>[0-9]+) (angler )?points. OOOO', message.content):
