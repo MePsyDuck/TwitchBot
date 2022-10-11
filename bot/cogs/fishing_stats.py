@@ -90,8 +90,10 @@ class FishingStatsCog(BaseCog):
             catches = await FishingLogs.filter(fisherman=username_lower).count()
 
             biggest_catch = None
+            biggest_fish = None
             if catches > 0:
                 biggest_catch = await FishingLogs.filter(fisherman=username_lower).order_by('-points', '-when').first()
+                biggest_fish = biggest_catch.fish if biggest_catch.fish != 'auloen' else 'gachiGOLD '
 
             casts = stats.snaps + catches
 
@@ -104,7 +106,7 @@ class FishingStatsCog(BaseCog):
                     f'{username} {casts} casts, '
                     f'{stats.snaps} snaps ({percent}%), '
                     f'{catches} caught, '
-                    f'{f"biggest fish {biggest_catch.fish}({biggest_catch.points}), " if biggest_catch else ""}'
+                    f'{f"biggest fish {biggest_fish}({biggest_catch.points}), " if biggest_catch else ""}'
                     f'{f"caught {times_caught} times" if times_caught else "never caught"}'
                 )
             else:
@@ -124,3 +126,10 @@ class FishingStatsCog(BaseCog):
         top_catchers = await FishingLogs.annotate(count=Count('id')).group_by('fisherman').order_by('-count')\
             .limit(5).values('fisherman', 'count')
         await ctx.send('🎣 ' + ', '.join([f"{catcher['fisherman']} {catcher['count']}" for catcher in top_catchers]))
+
+    @commands.command(aliases=['caught'])
+    @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
+    async def topcaught(self, ctx: commands.Context):
+        top_caught = await FishingLogs.annotate(count=Count('id')).group_by('fish').order_by('-count')\
+            .limit(5).values('fish', 'count')
+        await ctx.send('FailFish ' + ', '.join([f"{fish['fish']} {fish['count']}" for fish in top_caught]))
