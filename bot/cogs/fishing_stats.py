@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timedelta
+import random
 
 from cacheout import LRUCache
 from regex import regex
@@ -14,11 +14,26 @@ from db import FishingStats, FishingLogs
 from logs import logger
 
 
+class LastSnapper:
+    username = ''
+    snaps = 0
+
+    def add_snap(self, username):
+        if self.username == username:
+            self.snaps += 1
+        else:
+            self.username = username
+            self.snaps = 1
+    
+    def reset(self):
+        self.username = ''
+        self.snaps = 0
+
 class FishingStatsCog(BaseCog):
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
         self.cache = LRUCache()
-        self.last_cyn_reply_at = datetime.utcnow()
+        self.last_snapper = LastSnapper()
 
     @commands.Cog.event()
     async def event_message(self, message: Message):
@@ -44,9 +59,14 @@ class FishingStatsCog(BaseCog):
                 fisherman_stats.snaps = F('snaps') + 1
                 await fisherman_stats.save()
 
-                if datetime.utcnow() - self.last_cyn_reply_at > timedelta(hours=1):
-                    self.last_cyn_reply_at = datetime.utcnow()
-                    await message.channel.send("CouldYouNot")
+                self.last_snapper.add_snap(fisherman)
+                if self.last_snapper.snaps == 2:
+                    await message.channel.send('CouldYouNot')
+                elif self.last_snapper.snaps == 5:
+                    await message.channel.send('getHelp')
+                elif self.last_snapper.snaps >= 8:
+                    await message.channel.send(random.choice(['WEIRD', 'FeelsWeirdestMan', 'peepoWeirdClap', 'WeirdEyes', 'weirdPaper', 
+                                            'Weirdga', 'x0r6ztGiggle', 'ElNoSabe', 'Shirley', 'Clueless', 'singWeird', 'WeirdChamp']))
 
             elif match := regex.search(r'(?P<display_name>[\p{L}|\p{N}_]+) has caught a (new species of )?fish '
                                        r'called the (?P<fish>[a-zA-Z0-9_]{4,25}) (for|worth) '
@@ -66,6 +86,8 @@ class FishingStatsCog(BaseCog):
 
                 logger.info(f'{fisherman} caught {fish} for {points} points')
                 await FishingLogs.create(fisherman=fisherman, fish=fish, points=points)
+
+                self.last_snapper.reset()
 
         elif re.search(r'!cast(.*)', message.content):
             fisherman = message.author.name.lower()
