@@ -31,7 +31,7 @@ class ShootoutStatsCog(BaseCog):
 
                 logger.info(f'{loser} lost shootout')
 
-        elif match := re.search(r'!shootout (?P<user_shot>\S+) .*', message.content):
+        elif match := re.search(r'!shootout (?P<user_shot>\S+)( .*)?', message.content):
             shooter = message.author.name.lower()
 
             shooter_stats, _ = await ShootoutStats.get_or_create(username=shooter)
