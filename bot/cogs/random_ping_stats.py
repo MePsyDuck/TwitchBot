@@ -23,21 +23,21 @@ class RandomPingStatsCog(BaseCog):
             if match := re.search(r'singsingRingring (?P<users>([a-zA-Z0-9_]{4,25}\s?)+)', message.content):
                 pinged_users = match.group('users').lower()
 
+                logger.info(f'pinged: {pinged_users}')
+
                 for user in re.findall(r'([a-zA-Z0-9_]{4,25})\s?', pinged_users):
                     ping_stats, _ = await RandomPingStats.get_or_create(username=user)
                     ping_stats.times_pinged = F('times_pinged') + 1
                     await ping_stats.save()
 
-                logger.info(f'pinged: {pinged_users}')
-
         elif re.search('!randomping(.*)', message.content):
             user = message.author.name.lower()
+
+            logger.info(f'{user} randompinged')
 
             ping_stats, _ = await RandomPingStats.get_or_create(username=user)
             ping_stats.random_pings = F('random_pings') + 1
             await ping_stats.save()
-
-            logger.info(f'{user} randompinged')
 
     @commands.command(aliases=['ps'])
     @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)

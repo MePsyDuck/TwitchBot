@@ -51,5 +51,5 @@ class ShootoutStats(Model):
     duels_accepted = fields.IntField(default=0)
 
     def __str__(self):
-        s = f'{self.username}, current_streak={self.current_streak}, highest_streak={self.highest_streak}, '
+        s = f'{self.username}, current_streak={self.current_streak}, highest_streak={self.highest_streak}, ' \
             f'duels_started={self.duels_started}, duels_accepted={self.duels_accepted}'
