@@ -19,4 +19,4 @@ class ChatLoggingCog(BaseCog):
     @commands.Cog.event()
     async def event_message(self, message: Message):
         if message.channel.name == 'singsing':
-            self.logger.info(f'{message.timestamp} {message.author.name} : {message.content}')
+            self.logger.info(f'{message.timestamp} {message.author.name if message.author else ""} : {message.content}')
