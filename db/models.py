@@ -45,11 +45,14 @@ class ChannelStats(Model):
 
 class ShootoutStats(Model):
     username = fields.CharField(max_length=64, unique=True)
-    current_streak = fields.IntField(default=0)
-    highest_streak = fields.IntField(default=0)
+    current_loss_streak = fields.IntField(default=0)
+    highest_loss_streak = fields.IntField(default=0)
+    current_win_streak = fields.IntField(default=0)
+    highest_win_streak = fields.IntField(default=0)
     duels_started = fields.IntField(default=0)
     duels_accepted = fields.IntField(default=0)
 
     def __str__(self):
-        s = f'{self.username}, current_streak={self.current_streak}, highest_streak={self.highest_streak}, ' \
-            f'duels_started={self.duels_started}, duels_accepted={self.duels_accepted}'
+        s = f'{self.username}, losses={self.current_loss_streak}/{self.highest_loss_streak}, ' \
+            f'wins={self.current_win_streak}/{self.highest_win_streak}, duels_started={self.duels_started}, ' \
+            f'duels_accepted={self.duels_accepted}'

@@ -24,10 +24,11 @@ class LastSnapper:
         else:
             self.username = username
             self.snaps = 1
-    
+
     def reset(self):
         self.username = ''
         self.snaps = 0
+
 
 class FishingStatsCog(BaseCog):
     def __init__(self, bot: commands.Bot):
@@ -53,8 +54,6 @@ class FishingStatsCog(BaseCog):
                 else:
                     fisherman = display_name
 
-                logger.info(f'{fisherman} snapped')
-
                 fisherman_stats, _ = await FishingStats.get_or_create(fisherman=fisherman)
                 fisherman_stats.snaps = F('snaps') + 1
                 await fisherman_stats.save()
@@ -65,8 +64,10 @@ class FishingStatsCog(BaseCog):
                 elif self.last_snapper.snaps == 4:
                     await message.channel.send('getHelp')
                 elif self.last_snapper.snaps >= 6:
-                    await message.channel.send(random.choice(['WEIRD', 'FeelsWeirdestMan', 'peepoWeirdClap', 'WeirdEyes', 'weirdPaper', 
+                    await message.channel.send(random.choice(['WEIRD', 'FeelsWeirdestMan', 'peepoWeirdClap', 'WeirdEyes', 'weirdPaper',
                                             'Weirdga', 'x0r6ztGiggle', 'ElNoSabe', 'Shirley', 'Clueless', 'singWeird', 'WeirdChamp']))
+
+                logger.info(f'{fisherman} snapped')
 
             elif match := regex.search(r'(?P<display_name>[\p{L}|\p{N}_]+) has caught a (new species of )?fish '
                                        r'called the (?P<fish>[a-zA-Z0-9_]{4,25}) (for|worth) '
@@ -83,9 +84,9 @@ class FishingStatsCog(BaseCog):
 
                 fish = match.group('fish').lower()
                 points = int(match.group('points'))
+                await FishingLogs.create(fisherman=fisherman, fish=fish, points=points)
 
                 logger.info(f'{fisherman} caught {fish} for {points} points')
-                await FishingLogs.create(fisherman=fisherman, fish=fish, points=points)
 
                 self.last_snapper.reset()
 
@@ -95,11 +96,11 @@ class FishingStatsCog(BaseCog):
             if message.author.display_name.lower() != fisherman:
                 self.cache.set(message.author.display_name.lower(), fisherman)
 
-            logger.info(f'{fisherman} tried casting')
-
             fisherman_stats, _ = await FishingStats.get_or_create(fisherman=fisherman)
             fisherman_stats.casts = F('casts') + 1
             await fisherman_stats.save()
+
+            logger.info(f'{fisherman} tried casting')
 
     @commands.command(aliases=['fs'])
     @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
