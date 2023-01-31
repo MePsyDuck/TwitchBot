@@ -59,7 +59,8 @@ class ShootoutStatsCog(BaseCog):
             shooter_stats.duels_started = F('duels_started') + 1
             await shooter_stats.save()
 
-            user_shot = match.group('user_shot').lower()
+            user_shot = self.get_mentioned_user(match.group('user_shot')) or match.group('user_shot')
+            user_shot = user_shot.lower()
             user_stats, _ = await ShootoutStats.get_or_create(username=user_shot)
             user_stats.duels_accepted = F('duels_accepted') + 1
             await user_stats.save()
@@ -71,12 +72,13 @@ class ShootoutStatsCog(BaseCog):
     @commands.command(aliases=['ss'])
     @commands.cooldown(rate=1, per=COOLDOWN, bucket=commands.Bucket.default)
     async def shootoutstats(self, ctx: commands.Context, *args: str):
-        username = self.get_mentioned_user(*args) or ctx.author.name
-        username_lower = username.lower()
+        if ctx.channel.name == 'mepsyduck_':
+            username = self.get_mentioned_user(*args) or ctx.author.name
+            username_lower = username.lower()
 
-        if stats := await ShootoutStats.get_or_none(username=username_lower):
-            await ctx.send(
-                f'{username} losses={stats.current_loss_streak}/{stats.highest_loss_streak}, '
-                f'wins={stats.current_win_streak}/{stats.highest_win_streak},')
-        else:
-            await ctx.send(f'{username} has no stats')
+            if stats := await ShootoutStats.get_or_none(username=username_lower):
+                await ctx.send(
+                    f'{username} losses={stats.current_loss_streak}/{stats.highest_loss_streak}, '
+                    f'wins={stats.current_win_streak}/{stats.highest_win_streak},')
+            else:
+                await ctx.send(f'{username} has no stats')
