@@ -18,6 +18,9 @@ class LastDuel:
         self.shooter = shooter
         self.user_shot = user_shot
 
+    def get_winner(self, loser):
+        return self.shooter if self.user_shot == loser else self.user_shot
+
 
 class ShootoutStatsCog(BaseCog):
     def __init__(self, bot: commands.Bot):
@@ -35,7 +38,7 @@ class ShootoutStatsCog(BaseCog):
                 winner = 'unknown'
 
                 if loser in [self.last_duel.shooter, self.last_duel.user_shot]:
-                    winner = self.last_duel.shooter if self.last_duel.user_shot == loser else self.last_duel.shooter
+                    winner = self.last_duel.get_winner(loser)
                     winner_stats, _ = await ShootoutStats.get_or_create(username=winner)
                     if winner_stats.highest_win_streak == winner_stats.current_win_streak:
                         winner_stats.highest_win_streak = F('highest_win_streak') + 1
