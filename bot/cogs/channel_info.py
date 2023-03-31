@@ -55,17 +55,16 @@ class ChannelInfoCog(BaseCog):
     @commands.command()
     @commands.cooldown(rate=1, per=COOLDOWN * 10, bucket=commands.Bucket.default)
     async def downtime(self, ctx: commands.Context, *args: str):
-        if ctx.channel.name == 'mepsyduck_':
-            username = self.get_mentioned_user(*args) or ctx.channel.name
-            username_lower = username.lower()
-    
-            last_live = await ChannelStats.get_or_none(channel=username_lower, key=KEY_LAST_LIVE)
-            last_offline = await ChannelStats.get_or_none(channel=username_lower, key=KEY_LAST_OFFLINE)
-            if last_offline:
-                last_offline_dt = datetime.datetime.strptime(last_offline.value, DATETIME_FORMAT)
-                if last_live and datetime.datetime.strptime(last_live.value, DATETIME_FORMAT) > last_offline_dt:
-                    await ctx.send('strimer is currently live you Pepega')
-                else:
-                    delta = humanize.precisedelta(datetime.datetime.utcnow() - last_offline_dt, minimum_unit="minutes",
-                                                format="%0.0f")
-                    await ctx.send(f'strimer last streamed {delta} ago')
+        username = self.get_mentioned_user(*args) or ctx.channel.name
+        username_lower = username.lower()
+
+        last_live = await ChannelStats.get_or_none(channel=username_lower, key=KEY_LAST_LIVE)
+        last_offline = await ChannelStats.get_or_none(channel=username_lower, key=KEY_LAST_OFFLINE)
+        if last_offline:
+            last_offline_dt = datetime.datetime.strptime(last_offline.value, DATETIME_FORMAT)
+            if last_live and datetime.datetime.strptime(last_live.value, DATETIME_FORMAT) > last_offline_dt:
+                await ctx.send('strimer is currently live you Pepega')
+            else:
+                delta = humanize.precisedelta(datetime.datetime.utcnow() - last_offline_dt, minimum_unit="minutes",
+                                            format="%0.0f")
+                await ctx.send(f'strimer last streamed {delta} ago')

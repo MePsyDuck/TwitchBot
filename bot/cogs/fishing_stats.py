@@ -59,13 +59,10 @@ class FishingStatsCog(BaseCog):
                 await fisherman_stats.save()
 
                 self.last_snapper.add_snap(fisherman)
-                if self.last_snapper.snaps == 2:
-                    await message.channel.send('CouldYouNot')
-                elif self.last_snapper.snaps == 4:
-                    await message.channel.send('getHelp')
-                elif self.last_snapper.snaps >= 6:
+                if self.last_snapper.snaps >= 5:
                     await message.channel.send(random.choice(['WEIRD', 'FeelsWeirdestMan', 'peepoWeirdClap', 'WeirdEyes', 'weirdPaper',
-                                            'Weirdga', 'x0r6ztGiggle', 'ElNoSabe', 'Shirley', 'Clueless', 'singWeird', 'WeirdChamp']))
+                                            'Weirdga', 'x0r6ztGiggle', 'ElNoSabe', 'Shirley', 'Clueless', 'singWeird', 'WeirdChamp',
+                                            'CouldYouNot', 'getHelp']))
 
                 logger.info(f'{fisherman} snapped')
 
