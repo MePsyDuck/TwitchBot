@@ -105,10 +105,10 @@ class FishingStatsCog(BaseCog):
         username = self.get_mentioned_user(*args) or ctx.author.name
         username_lower = username.lower()
 
-        if stats := await FishingStats.get_or_none(fisherman=username_lower):
-            times_caught = await FishingLogs.filter(fish=username_lower).count()
-            catches = await FishingLogs.filter(fisherman=username_lower).count()
+        times_caught = await FishingLogs.filter(fish=username_lower).count()
+        catches = await FishingLogs.filter(fisherman=username_lower).count()
 
+        if stats := await FishingStats.get_or_none(fisherman=username_lower):
             biggest_catch = None
             biggest_fish = None
             if catches > 0:
@@ -116,10 +116,7 @@ class FishingStatsCog(BaseCog):
                 biggest_fish = biggest_catch.fish if biggest_catch.fish != 'auloen' else 'gachiGOLD '
 
             casts = stats.snaps + catches
-
             percent = stats.snaps * 100 // casts
-            if username_lower == 'king_of_evi1':
-                percent = 50.00
 
             if casts > 0:
                 await ctx.send(
@@ -133,6 +130,8 @@ class FishingStatsCog(BaseCog):
                 await ctx.send(f'{username} never tried fishing but was caught {times_caught} times')
             else:
                 await ctx.send(f'{username} has no fishing stats recorded.')
+        elif times_caught > 0:
+            await ctx.send(f'{username} never tried fishing but was caught {times_caught} times')
         else:
             await ctx.send(f'{username} has no fishing stats recorded.')
 
