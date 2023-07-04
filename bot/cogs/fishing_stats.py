@@ -129,6 +129,8 @@ class FishingStatsCog(BaseCog):
                     f'{f"biggest fish {biggest_fish}({biggest_catch.points}), " if biggest_catch else ""}'
                     f'{f"caught {times_caught} times" if times_caught else "never caught"}'
                 )
+            elif times_caught > 0:
+                await ctx.send(f'{username} never tried fishing but was caught {times_caught} times')
             else:
                 await ctx.send(f'{username} has no fishing stats recorded.')
         else:
