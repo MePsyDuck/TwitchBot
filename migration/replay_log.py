@@ -18,16 +18,29 @@ from dotenv import load_dotenv
 
 load_dotenv()  # should happen first, even before imports
 
+class LastDuel:
+    challenger = None
+    target = None
+
+    def update(self, challenger, target):
+        self.challenger = challenger
+        self.target = target
+
+    def get_winner(self, loser):
+        return self.challenger if self.target == loser else self.target
+
 
 async def replay():
     await Tortoise.init(db_url=DB_URL, modules={"models": ['db.models']})
     await Tortoise.generate_schemas(safe=True)
 
-    with open('bot.txt') as f:
+    last_duel = LastDuel()
+
+    with open('old.txt') as f:
         lines = f.readlines()
 
     for line in lines:
-        if 'event_message' in line:
+        if line and 'event_message' in line:
             # logger.info(f'{fisherman} snapped')
             if match := regex.search(r'(?P<fisherman>[\p{L}|\p{N}_]+) snapped', line):
                 fisherman = match.group('fisherman')
@@ -67,6 +80,46 @@ async def replay():
                 ping_stats, _ = await RandomPingStats.get_or_create(username=user)
                 ping_stats.random_pings = F('random_pings') + 1
                 await ping_stats.save()
+
+            # logger.info(f'{loser} lost shootout against {winner}')
+            elif match := regex.search(r'(?P<loser>[\p{L}|\p{N}_]+) lost shootout against (?P<winner>[\p{L}|\p{N}_]+)', line):
+                loser = match.group('loser')
+                winner = match.group('winner')
+
+                if loser in [last_duel.challenger, last_duel.target]:
+                    winner = last_duel.get_winner(loser)
+                    winner_stats, _ = await ShootoutStats.get_or_create(username=winner)
+                    if winner_stats.highest_win_streak == winner_stats.current_win_streak:
+                        winner_stats.highest_win_streak = F('highest_win_streak') + 1
+                    winner_stats.current_win_streak = F('current_win_streak') + 1
+                    winner_stats.total_won = F('total_won') + 1
+                    winner_stats.current_loss_streak = 0
+                    await winner_stats.save()
+                else:
+                    print(f'last duel mismatch {loser=}, {winner=}')
+
+                loser_stats, _ = await ShootoutStats.get_or_create(username=loser)
+                if loser_stats.highest_loss_streak == loser_stats.current_loss_streak:
+                    loser_stats.highest_loss_streak = F('highest_loss_streak') + 1
+                loser_stats.current_loss_streak = F('current_loss_streak') + 1
+                loser_stats.current_win_streak = 0
+                loser_stats.total_lost = F('total_lost') + 1
+                await loser_stats.save()
+
+                await ShootoutLogs.create(challenger=last_duel.challenger, target=last_duel.target,
+                                          winner=winner, loser=loser)
+
+            # logger.info(f'{challenger} dueled {target}')
+            elif match := regex.search(r'(?P<challenger>[\p{L}|\p{N}_]+) dueled (?P<target>[\p{L}|\p{N}_]+)', line):
+                challenger_stats, _ = await ShootoutStats.get_or_create(username=match.group('challenger'))
+                challenger_stats.duels_started = F('duels_started') + 1
+                await challenger_stats.save()
+
+                target_stats, _ = await ShootoutStats.get_or_create(username=match.group('target'))
+                target_stats.duels_accepted = F('duels_accepted') + 1
+                await target_stats.save()
+
+                last_duel.update(match.group('challenger'), match.group('target'))
             else:
                 print(f'didnt match any pattern : {line}')
         else:
@@ -80,6 +133,6 @@ if __name__ == "__main__":
     from tortoise import Tortoise, run_async
     from tortoise.expressions import F
 
-    from db import FishingStats, FishingLogs, RandomPingStats, DB_URL
+    from db import FishingStats, FishingLogs, RandomPingStats, DB_URL, ShootoutStats, ShootoutLogs
 
     run_async(replay())
