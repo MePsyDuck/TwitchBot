@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 
 load_dotenv()  # should happen first, even before imports
 
+
 class LastDuel:
     challenger = None
     target = None
@@ -36,7 +37,7 @@ async def replay():
 
     last_duel = LastDuel()
 
-    with open('old.txt') as f:
+    with open('bot_jan.txt') as f:
         lines = f.readlines()
 
     for line in lines:
@@ -82,7 +83,9 @@ async def replay():
                 await ping_stats.save()
 
             # logger.info(f'{loser} lost shootout against {winner}')
-            elif match := regex.search(r'(?P<loser>[\p{L}|\p{N}_]+) lost shootout against (?P<winner>[\p{L}|\p{N}_]+)', line):
+            elif match := regex.search(r'(?P<when>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) INFO\s+bot\s+'
+                                       r'event_message\s+(?P<loser>[\p{L}|\p{N}_]+) lost shootout against (?P<winner>[\p{L}|\p{N}_]+)', line):
+                when = match.group('when')
                 loser = match.group('loser')
                 winner = match.group('winner')
 
@@ -107,7 +110,7 @@ async def replay():
                 await loser_stats.save()
 
                 await ShootoutLogs.create(challenger=last_duel.challenger, target=last_duel.target,
-                                          winner=winner, loser=loser)
+                                          winner=winner, loser=loser, when=when)
 
             # logger.info(f'{challenger} dueled {target}')
             elif match := regex.search(r'(?P<challenger>[\p{L}|\p{N}_]+) dueled (?P<target>[\p{L}|\p{N}_]+)', line):
