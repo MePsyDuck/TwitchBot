@@ -10,6 +10,7 @@ from logs import logger
 class AdminCog(BaseCog):
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
+        self.disabled_commands = dict()
 
     @commands.command()
     async def rename(self, ctx: commands.Context, *args: str):
@@ -37,3 +38,35 @@ class AdminCog(BaseCog):
             logger.info(f'{from_username} updated to {to_username}')
         else:
             await ctx.send(f'You don\'t have permission to use this command')
+
+    @commands.command()
+    async def disable_command(self, ctx: commands.Context, command_name: str):
+        if ctx.message.author.name.lower() in [DEV_NICK, 'inoe182']:
+            if command_name in self.disabled_commands:
+                await ctx.send(f'Command {command_name} already disabled')
+            else:
+                if command := self.bot.get_command(command_name):
+                    try:
+                        self.bot.remove_command(command_name)
+                        self.disabled_commands[command_name] = command
+                        await ctx.send(f'Command {command_name} disabled')
+                    except commands.CommandNotFound as e:
+                        await ctx.send(str(e))
+                else:
+                    await ctx.send(f'Command {command_name} not found')
+
+    @commands.command()
+    async def enable_command(self, ctx: commands.Context, command_name: str):
+        if ctx.message.author.name.lower() in [DEV_NICK, 'inoe182']:
+            if self.bot.get_command(command_name):
+                await ctx.send(f'Command {command_name} already enabled')
+            else:
+                if command := self.disabled_commands.get(command_name):
+                    try:
+                        self.bot.add_command(command)
+                        del self.disabled_commands[command_name]
+                        await ctx.send(f'Command {command_name} enabled')
+                    except commands.TwitchCommandError as e:
+                        await ctx.send(str(e))
+                else:
+                    await ctx.send(f'Command {command_name} not found')
