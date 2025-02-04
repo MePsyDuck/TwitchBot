@@ -55,9 +55,9 @@ class ShootoutStats(Model):
     duels_accepted = fields.IntField(default=0)
 
     def __str__(self):
-        return  f'{self.username}({self.duels_started}/{self.duels_accepted}), ' \
-                f'loss :[{self.current_loss_streak}/{self.highest_loss_streak}/{self.total_lost}], ' \
-                f'won :[{self.current_win_streak}/{self.highest_win_streak}/{self.total_won}]'
+        return f'{self.username}({self.duels_started}/{self.duels_accepted}), ' \
+               f'loss :[{self.current_loss_streak}/{self.highest_loss_streak}/{self.total_lost}], ' \
+               f'won :[{self.current_win_streak}/{self.highest_win_streak}/{self.total_won}]'
 
 
 class ShootoutLogs(Model):
@@ -68,4 +68,21 @@ class ShootoutLogs(Model):
     when = fields.DatetimeField(auto_now_add=True)
 
     def __str__(self):
-        return  f'{self.challenger} vs {self.target} : {self.loser} lost at {self.when}'
+        return f'{self.challenger} vs {self.target} : {self.loser} lost at {self.when}'
+
+
+class RollLogs(Model):
+    username = fields.CharField(max_length=64, unique=True)
+    rolled_value = fields.IntField(default=-1)
+    when = fields.DatetimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.username} rolled {self.rolled_value} at {self.when}'
+
+
+class RollStats(Model):
+    username = fields.CharField(max_length=64, unique=True)
+    rolls = fields.IntField(default=0)
+
+    def __str__(self):
+        return f'{self.username} tried rolling {self.rolls} times'
