@@ -87,7 +87,7 @@ class FishingStatsCog(BaseCog):
 
                 self.last_snapper.reset()
 
-        elif re.search(r'!cast(.*)', message.content):
+        if message.content.startswith('!cast'):
             fisherman = message.author.name.lower()
 
             if message.author.display_name.lower() != fisherman:

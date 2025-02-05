@@ -30,7 +30,7 @@ class RandomPingStatsCog(BaseCog):
 
                 logger.info(f'pinged: {pinged_users}')
 
-        elif re.search('!randomping(.*)', message.content):
+        if message.content.startswith('!randomping'):
             user = message.author.name.lower()
 
             ping_stats, _ = await RandomPingStats.get_or_create(username=user)

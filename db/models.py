@@ -73,7 +73,7 @@ class ShootoutLogs(Model):
 
 class RollLogs(Model):
     username = fields.CharField(max_length=64, unique=True)
-    rolled_value = fields.IntField(default=-1)
+    rolled_value = fields.IntField(default=0)
     when = fields.DatetimeField(auto_now_add=True)
 
     def __str__(self):
